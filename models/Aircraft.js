@@ -52,7 +52,7 @@ const AircraftSchema = new mongoose.Schema({
             // Haal de basis URL uit je .env of gebruik localhost als fallback
             const baseUrl = process.env.BASE_URI || "http://localhost:8000";
 
-            [cite_start]// We voegen navigatie-links toe (De Checker houdt hiervan!) [cite: 1]
+            // We voegen navigatie-links toe (De Checker houdt hiervan!) [cite: 1]
             ret._links = {
                 self: {href: `${baseUrl}/aircraft/${ret._id}`},
                 collection: {href: `${baseUrl}/aircraft`}

@@ -1,20 +1,15 @@
-console.log("bitch ik werk gwn")
 import express from "express";
 import mongoose from "mongoose";
-// import cors from "cors"; <--- WEG ERMEE! 🚫
 import Aircraft from "./models/Aircraft.js";
 
 const app = express();
 
 // --- MIDDLEWARE ---
 
-// 1. CORS: HANDMATIG (Want we zijn pro's en volgen de regels) 💅
+// 1. CORS: HANDMATIG
 app.use((req, res, next) => {
-    // Wie mag erbij? Iedereen! (*)
     res.header("Access-Control-Allow-Origin", "*");
-    // Welke headers mogen meegestuurd worden? (Authorization is vast voor later handig!)
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
-    // Welke acties zijn toegestaan?
     res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
     next();
 });
@@ -26,26 +21,25 @@ app.use(express.urlencoded({extended: true}));
 // 3. Accept Header Check
 app.use((req, res, next) => {
     if (req.method !== "OPTIONS" && req.headers.accept !== "application/json") {
-        return res.status(406).json({error: "Ew, we only accept application/json here, bestie. 💅"});
+        return res.status(406).json({error: "Client must accept application/json"});
     }
     next();
 });
 
 // Database Verbinding
 mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log("✨ Connected to the Airbus Database! Periodt bestiee"))
+    .then(() => console.log("✨ Connected to the Airbus Database!"))
     .catch(e => console.log("❌ Database connection failed.", e));
 
 // --- ROUTES ---
 
 // ROOT
 app.get("/", (req, res) => {
-    res.json({message: "Welcome to Airbus API ✈️. We built this runway ourselves!"});
+    res.json({message: "Welcome to Airbus API ✈️"});
 });
 
-// OPTIONS: Pre-flight checks (Verplicht voor rubric!)
+// OPTIONS: Pre-flight checks
 app.options("/aircraft", (req, res) => {
-    // Hier mag je ook nog specifiek aangeven wat MAG op deze route
     res.header("Allow", "GET,POST,OPTIONS");
     res.header("Access-Control-Allow-Methods", "GET,POST,OPTIONS");
     res.status(204).send();
@@ -88,7 +82,7 @@ app.get("/aircraft", async (req, res) => {
             }
         });
     } catch (e) {
-        res.status(500).json({error: "Server meltdown! 🔥", details: e.message});
+        res.status(500).json({error: "Server error", details: e.message});
     }
 });
 
@@ -96,12 +90,12 @@ app.get("/aircraft", async (req, res) => {
 app.post("/aircraft", async (req, res) => {
     try {
         if (!req.body.model || !req.body.registration || !req.body.airline || !req.body.status) {
-            return res.status(400).json({error: "Fill in all required fields, queen! 😤"});
+            return res.status(400).json({error: "Fill in all required fields"});
         }
         const newAircraft = await Aircraft.create(req.body);
         res.status(201).json(newAircraft);
     } catch (e) {
-        res.status(400).json({error: "Validation fail. Awkward..."});
+        res.status(400).json({error: "Validation failed"});
     }
 });
 
@@ -109,10 +103,10 @@ app.post("/aircraft", async (req, res) => {
 app.get("/aircraft/:id", async (req, res) => {
     try {
         const aircraft = await Aircraft.findById(req.params.id);
-        if (!aircraft) return res.status(404).json({error: "Plane not found. Ghosted. 👻"});
+        if (!aircraft) return res.status(404).json({error: "Plane not found"});
         res.json(aircraft);
     } catch (e) {
-        res.status(404).json({error: "Invalid ID."});
+        res.status(404).json({error: "Invalid ID"});
     }
 });
 
@@ -120,7 +114,7 @@ app.get("/aircraft/:id", async (req, res) => {
 app.put("/aircraft/:id", async (req, res) => {
     try {
         if (!req.body.model || !req.body.registration || !req.body.airline || !req.body.status) {
-            return res.status(400).json({error: "No empty fields allowed!"});
+            return res.status(400).json({error: "No empty fields allowed"});
         }
         const updatedAircraft = await Aircraft.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
@@ -129,7 +123,7 @@ app.put("/aircraft/:id", async (req, res) => {
         if (!updatedAircraft) return res.status(404).json({error: "Plane not found"});
         res.json(updatedAircraft);
     } catch (e) {
-        res.status(400).json({error: "Update failed."});
+        res.status(400).json({error: "Update failed"});
     }
 });
 
@@ -137,14 +131,14 @@ app.put("/aircraft/:id", async (req, res) => {
 app.delete("/aircraft/:id", async (req, res) => {
     try {
         const deleted = await Aircraft.findByIdAndDelete(req.params.id);
-        if (!deleted) return res.status(404).json({error: "Already gone."});
+        if (!deleted) return res.status(404).json({error: "Already gone"});
         res.status(204).send();
     } catch (e) {
-        res.status(400).json({error: "Delete failed."});
+        res.status(400).json({error: "Delete failed"});
     }
 });
 
 const port = process.env.EXPRESS_PORT || 8000;
 app.listen(port, () => {
-    console.log(`✈️ Airbus API is taking off from port ${port}. clear the runways girls`);
+    console.log(`✈️ Airbus API is running on port ${port}`);
 });
