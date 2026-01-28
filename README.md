@@ -74,6 +74,5 @@ Deze applicatie bestaat uit twee delen: de Backend (`airbus-api`) en de Frontend
 
 ## 📝 Auteur
 
-Gemaakt door [Jouw Naam]
-Studentnummer: [Jouw Nummer]
-Klas: [Jouw Klas]
+Gemaakt door Charge
+Studentnummer: 1091441
