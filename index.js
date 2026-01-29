@@ -69,6 +69,10 @@ app.get("/aircraft", async (req, res) => {
             .skip(skip)
             .limit(limit);
 
+        // ✨ DYNAMISCHE URL LOGICA ✨
+        // Pakt de URL uit .env (voor online) of valt terug op localhost (voor lokaal)
+        const baseUrl = process.env.BASE_URI || `http://localhost:${process.env.EXPRESS_PORT || 8000}`;
+
         res.json({
             items: aircrafts,
             pagination: {
@@ -77,7 +81,7 @@ app.get("/aircraft", async (req, res) => {
                 totalItems: totalItems,
                 limit: limit,
                 _links: {
-                    self: {href: `http://localhost:8000/aircraft?page=${page}&limit=${limit}`}
+                    self: {href: `${baseUrl}/aircraft?page=${page}&limit=${limit}`}
                 }
             }
         });
